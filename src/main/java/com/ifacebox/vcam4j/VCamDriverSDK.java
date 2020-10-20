@@ -3,6 +3,7 @@ package com.ifacebox.vcam4j;
 import com.e2esoft.vcam.ClassFactory;
 import com.e2esoft.vcam.IVCamRenderer;
 
+
 public class VCamDriverSDK extends VCamSDK {
     private IVCamRenderer vCamRenderer;
 
@@ -11,9 +12,8 @@ public class VCamDriverSDK extends VCamSDK {
             this.vCamRenderer = ClassFactory.createVCamRenderer();
             this.vCamRenderer.setFlip(0);
         } catch (Exception e) {
-            throw new VCamException("创建虚拟摄像头SDK失败！", e);
-        }finally {
             this.dispose();
+            throw new VCamException("创建虚拟摄像头SDK失败！", e);
         }
     }
 
@@ -33,7 +33,7 @@ public class VCamDriverSDK extends VCamSDK {
                 this.vCamRenderer.sendFrameEx(new byte[0], 0, 0);
             } else {
                 try {
-                    this.vCamRenderer.sendFrameEx(super.getFrameEx(data), VCAM_WIDTH, VCAM_HEIGHT);
+                    this.vCamRenderer.sendFrameEx(this.getFrameEx(data), VCAM_WIDTH, VCAM_HEIGHT);
                 } catch (Exception e) {
                 }
             }
@@ -43,7 +43,14 @@ public class VCamDriverSDK extends VCamSDK {
     @Override
     public void captureScreen() {
         if (this.vCamRenderer != null) {
-            this.vCamRenderer.captureScreen(0, 0, 0, 0);
+            this.vCamRenderer.captureScreen(0, 0, VCAM_WIDTH, VCAM_HEIGHT);
+        }
+    }
+
+    @Override
+    public void captureScreen(int x, int y, int width, int height) {
+        if (this.vCamRenderer != null) {
+            this.vCamRenderer.captureScreen(x, y, width, height);
         }
     }
 

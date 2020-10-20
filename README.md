@@ -1,8 +1,11 @@
 # vcam4j
 
 #### 介绍
-Java虚拟摄像头 
-VCamSDK：https://www.e2esoft.com/sdk/vcam-sdk/
+Java虚拟摄像头  
+VCamSDK是适用于Windows的虚拟相机SDK，允许您在无需安装软件的情况下向应用程序添加"虚拟摄像头"功能。  
+VCamSDK：https://www.e2esoft.com/sdk/vcam-sdk/  
+VCamSDK包含将虚拟摄像机功能添加到应用程序所需的所有文件（https://www.e2esoft.com/download/vcam-sdk）  
+替代解决方案DS版本无驱动程序，轻量级但兼容性较低（https://www.e2esoft.com/download/vcam-sdk-ds）
 
 #### 软件架构
 Java、Type-safe Java/COM bridge
@@ -37,11 +40,11 @@ VCam SDK 基于 DirectShow 技术，下面是如何向 VCam 播放视频文件�
 > http://com4j.kohsuke.org/
 
 2.生成Java Mode  
-> java -jar tlbimp.jar -o vcam -p com.e2esoft.vcam.renderer VCamRenderer.tlb 
+> java -jar tlbimp.jar -o VCamSDK -p com.e2esoft.vcam ./resources/tlb/VCamRenderer.tlb 
 
-3.生成DShow版本
-> java -jar tlbimp.jar -o vcam -p com.e2esoft.vcam VCamCOM.tlb  
-> java -jar tlbimp.jar -o vcam -p com.e2esoft.vcam.source VCamSource.tlb  
+3.生成DS版本
+> java -jar tlbimp.jar -o VCamSDK -p com.e2esoft.vcam.ds ./resources/tlb/VCamCOM.tlb  
+> java -jar tlbimp.jar -o VCamSDK -p com.e2esoft.vcam.ds ./resources/tlb/VCamSource.tlb  
  
 
 

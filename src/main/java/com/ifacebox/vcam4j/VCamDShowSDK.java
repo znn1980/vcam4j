@@ -16,9 +16,8 @@ public class VCamDShowSDK extends VCamSDK {
             this.vCamSource = ClassFactory.createVCamSource();
             this.vCamRenderer = ClassFactory.createVCamRenderer();
         } catch (Exception e) {
-            throw new VCamException("创建虚拟摄像头SDK失败！", e);
-        } finally {
             this.dispose();
+            throw new VCamException("创建虚拟摄像头SDK失败！", e);
         }
     }
 
@@ -48,6 +47,13 @@ public class VCamDShowSDK extends VCamSDK {
     public void captureScreen() {
         if (this.vCamSource != null) {
             this.vCamSource.captureScreen();
+        }
+    }
+
+    @Override
+    public void captureScreen(int x, int y, int width, int height) {
+        if (this.vCamSource != null) {
+            this.vCamSource.captureScreenFixed(x, y, width, height);
         }
     }
 

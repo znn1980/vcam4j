@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public abstract class VCamSDK {
     public static final int VCAM_S_OK = 0;
-    public static final int VCAM_FPS = 1000;
+    public static final int VCAM_FPS = 100;
     public static final int VCAM_WIDTH = 640;
     public static final int VCAM_HEIGHT = 480;
 
@@ -39,6 +39,16 @@ public abstract class VCamSDK {
      * 开始屏幕捕获，鼠标跟踪捕获。
      */
     public abstract void captureScreen();
+
+    /**
+     * 屏幕捕获
+     *
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     */
+    public abstract void captureScreen(int x, int y, int width, int height);
 
     /**
      * 停止屏幕捕获。
