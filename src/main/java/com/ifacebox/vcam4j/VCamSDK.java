@@ -12,21 +12,13 @@ public abstract class VCamSDK {
     public static final int VCAM_FPS = 100;
     public static final int VCAM_WIDTH = 640;
     public static final int VCAM_HEIGHT = 480;
-    private static VCamSDK VCAM_SDK;
 
     public static synchronized VCamSDK createVCamSDK() {
-        if (VCAM_SDK == null) {
-            try {
-                VCAM_SDK = new VCamDriverSDK();
-            } catch (VCamException e) {
-                try {
-                    VCAM_SDK = new VCamDShowSDK();
-                } catch (VCamException ex) {
-                    VCAM_SDK = null;
-                }
-            }
+        try {
+            return new VCamDriverSDK();
+        } catch (VCamException e) {
+            return new VCamDShowSDK();
         }
-        return VCAM_SDK;
     }
 
     /**

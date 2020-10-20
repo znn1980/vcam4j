@@ -76,11 +76,12 @@ public class VCamUITest extends JFrame implements ActionListener {
             vCamRunning = true;
             vCamFrameThread = new Thread(() -> {
                 while (vCamRunning) {
+                    long ms = System.currentTimeMillis();
                     if (isClosed()) {
                         continue;
                     }
-                    System.err.println(vCamStartFrame.getText());
                     vCamSDK.sendFrameEx(VCamServerTest.getVCamFrame());
+                    System.err.println(vCamStartFrame.getText() + (System.currentTimeMillis() - ms));
                 }
             });
             vCamFrameThread.start();
@@ -96,11 +97,12 @@ public class VCamUITest extends JFrame implements ActionListener {
             vCamRunning = true;
             vCamScreenThread = new Thread(() -> {
                 while (vCamRunning) {
+                    long ms = System.currentTimeMillis();
                     if (isClosed()) {
                         continue;
                     }
-                    System.err.println(vCamStartScreen.getText());
                     vCamSDK.captureScreen(vCamScreen.x, vCamScreen.x, vCamScreen.width, vCamScreen.height);
+                    System.err.println(vCamStartScreen.getText() + (System.currentTimeMillis() - ms));
                 }
             });
             vCamScreenThread.start();
