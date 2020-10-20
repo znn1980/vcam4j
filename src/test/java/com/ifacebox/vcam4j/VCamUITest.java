@@ -6,7 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class VCamUITest extends JFrame implements ActionListener {
-    private boolean vCamRunning = false;
+    private volatile boolean vCamRunning = false;
+    private volatile boolean vCamOpening = false;
+    private volatile boolean vCamOpened = false;
     private JButton vCamStart;
     private JButton vCamStop;
     private JButton vCamStartFrame;
@@ -46,6 +48,8 @@ public class VCamUITest extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == vCamStart && vCamSDK == null) {
             System.err.println(vCamStart.getText());
+            vCamOpening = false;
+            vCamOpened = false;
             try {
                 vCamSDK = VCamSDK.createVCamSDK();
             } catch (Exception ex) {
@@ -63,6 +67,7 @@ public class VCamUITest extends JFrame implements ActionListener {
                 vCamScreenThread.interrupt();
                 vCamScreenThread = null;
             }
+            vCamSDK.sendFrameEx(null);
             vCamSDK.dispose();
             vCamSDK = null;
         }
@@ -71,9 +76,11 @@ public class VCamUITest extends JFrame implements ActionListener {
             vCamRunning = true;
             vCamFrameThread = new Thread(() -> {
                 while (vCamRunning) {
+                    if (isClosed()) {
+                        continue;
+                    }
                     System.err.println(vCamStartFrame.getText());
                     vCamSDK.sendFrameEx(VCamServerTest.getVCamFrame());
-                    vCamSDK.sleepFps();
                 }
             });
             vCamFrameThread.start();
@@ -89,9 +96,11 @@ public class VCamUITest extends JFrame implements ActionListener {
             vCamRunning = true;
             vCamScreenThread = new Thread(() -> {
                 while (vCamRunning) {
+                    if (isClosed()) {
+                        continue;
+                    }
                     System.err.println(vCamStartScreen.getText());
                     vCamSDK.captureScreen(vCamScreen.x, vCamScreen.x, vCamScreen.width, vCamScreen.height);
-                    vCamSDK.sleepFps();
                 }
             });
             vCamScreenThread.start();
@@ -103,6 +112,25 @@ public class VCamUITest extends JFrame implements ActionListener {
             vCamScreenThread.interrupt();
             vCamScreenThread = null;
         }
+    }
+
+    public boolean isClosed() {
+        vCamSDK.sleepFps();
+        vCamOpening = vCamSDK.isOpened();
+        if (this.vCamOpening) {
+            if (vCamOpened != vCamOpening) {
+                System.err.println("打开虚拟摄像头...");
+                this.vCamOpened = this.vCamOpening;
+            }
+        } else {
+            if (vCamOpened != vCamOpening) {
+                System.err.println("关闭虚拟摄像头...");
+                vCamSDK.sendFrameEx(null);
+                vCamOpened = vCamOpening;
+            }
+            return true;
+        }
+        return false;
     }
 
     public static void main(String[] args) throws Exception {
