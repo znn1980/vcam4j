@@ -12,13 +12,21 @@ public abstract class VCamSDK {
     public static final int VCAM_FPS = 100;
     public static final int VCAM_WIDTH = 640;
     public static final int VCAM_HEIGHT = 480;
+    private static VCamSDK VCAM_SDK;
 
-    public static VCamSDK createVCamSDK() {
-        try {
-            return new VCamDriverSDK();
-        } catch (VCamException e) {
-            return new VCamDShowSDK();
+    public static synchronized VCamSDK createVCamSDK() {
+        if (VCAM_SDK == null) {
+            try {
+                VCAM_SDK = new VCamDriverSDK();
+            } catch (VCamException e) {
+                try {
+                    VCAM_SDK = new VCamDShowSDK();
+                } catch (VCamException ex) {
+                    VCAM_SDK = null;
+                }
+            }
         }
+        return VCAM_SDK;
     }
 
     /**
@@ -41,7 +49,7 @@ public abstract class VCamSDK {
     public abstract void captureScreen();
 
     /**
-     * 屏幕捕获
+     * 屏幕捕获。
      *
      * @param x
      * @param y
@@ -56,7 +64,7 @@ public abstract class VCamSDK {
     public abstract void stopCaptureScreen();
 
     /**
-     * 销毁
+     * 销毁。
      */
     public abstract void dispose();
 
