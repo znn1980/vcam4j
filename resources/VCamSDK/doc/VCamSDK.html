@@ -1,0 +1,228 @@
+<html>
+<head>
+<style type="text/css">
+    html {background:#EEE;}
+    body {padding:0; margin:20px; font-size:13px; font-family:"Segoe UI", "Segoe UI Web", Helvetica, sans-serif; line-height:1.5; color:black; }
+    a {color:#66E; text-decoration:none; font-weight:bold;}
+    a:hover {color:#FF9148; text-decoration:none;}
+    img {border:medium none;}
+    h1 {margin:30px 0;color:#069;}
+    h2 {margin-top:35px;color:#069;}
+    h3,h4,h5 {margin-top:25px;}
+    ul,ol {padding-left:20px;}
+    li {padding-bottom:10px;}
+    .filename { text-decoration: underline; }
+    .bluetext { color:#0066FF; }
+    .function { color:#0066FF; font-weight:bold; }
+</style>
+</head>
+<body>
+    <h1 align="center">VCam SDK Help</h1>
+    <hr />
+    <h2>INTRODUCTION</h2>
+    <p>VCam SDK is a SDK of e2eSoft VCam software, which allows you to add virtual camera feature to your application.</p>
+    <h3>Files list:</h3>
+    <ul>
+        <li><strong>[doc]</strong> - This document.</li>
+        <li><strong>[driver]</strong> - VCam driver files (for Windows versions earlier than Win10 v1703).</li>
+        <li><strong>[driver_win10]</strong> - VCam driver files (only for Windows 10 or higher ).</li>
+        <li><strong>[x64]</strong> - Files for 64bits applications.</li>
+        <li><strong>AMCap.exe</strong> - Test application to view webcam video.</li>
+        <li><strong>devcon.exe</strong> - A command-line version of Device Manager, which enables, disables, installs, configures, and removes devices
+    on the local computer.
+        <li><strong>VCamRenderer.ax</strong> - A directshow renderer filter which can redirect its input video to
+        VCam driver and also defines the <a href="#ivcamrc">IVCamRenderer</a> interface which includes all SDK functions.</li>
+        <li><strong>VCamDemo.exe</strong> - VC++ demo application to show how to use VCam SDK in C++.</li>
+        <li><strong>VCamDemoCS.exe</strong> - C# demo application to show how to use VCam SDK in C#.</li>
+        <li><strong>DirectShowLib-2005.dll</strong> - DirectShow.NET, used by C# demo application.</li>
+        <li><strong>VCamDemos.zip</strong> - Source code for demo applications.</li>
+        <li><strong>install.bat</strong> - Install VCam driver and all components.</li>
+        <li><strong>uninstall.bat</strong> - Uninstall VCam driver and all components.</li>
+    </ul>
+    <h3>Distribution files</h3>
+    <ul>
+        <li><strong>[driver]</strong> - For Windows versions earlier than 10.</li>
+        <li><strong>[driver_win10]</strong> - For Windows 10 or higher.</li>
+        <li><strong>devcon.exe</strong> - Used to install/uninstall the driver, please use <strong>x64\devcon.exe</strong> on 64bits OS.</li>
+        <li><strong>VCamRenderer.ax</strong> - Register on target system, please use <strong>x64\VCamRenderer.ax</strong> for 64bits applications or .NET applications running on 64bits OS.</li>
+    </ul>
+        
+    <h2>GETTING STARTED</h2>
+    <ol>
+        <li>Install VCam driver and register filter - <strong>run install.bat</strong> as administrator;</li>
+        <li>Run <strong>VCamDemo.exe</strong> and play a video file in it, then use other applications (for example AMCap.exe) to see the video of webcam named "Virtual Camera";</li>
+        <li>Run <strong>VCamDemoCS.exe</strong> and play a video file in it, then use other applications (for example AMCap.exe) to see the video of webcam named "Virtual Camera";</li>
+        <li>Extract <strong>VCamDemos.zip</strong> file and open the VC++, C# demo projects to see how to use it.</li>
+    </ol>
+	<p><strong>NOTE:</strong> You should install some video codecs if the video files can't be played, for example <a href="http://forum.doom9.org/showthread.php?t=156191" target="_blank">LAVFilters</a>.</p>
+        
+    <h2>HOW IT WORKS</h2> 
+    <h3>Using DirectShow</h3>		  
+    1. Play a video file in graphedit with the default Video Renderer:
+    <p align="center"><img src="sdk_graph1.jpg" /></p>
+    2: Play a video file with VCam Renderer filter in graphedit - just like using the default one:
+    <p align="center"><img src="sdk_graph2.jpg" /></p>
+    3. The video was sent to Virtual Camera:
+    <p align="center"><img src="sdk_graph3.jpg" /></p>
+    
+    From this we can see that it's very easy to play a video file to VCam using directshow, and you can also play a video capture device,
+    a video stream, an image file or any other video sources to VCam with directshow easily.<br>
+    <br>
+    
+    <h3>Using IVCamRenderer COM interface</h3>
+    <p>Besides directshow, you can also use the <a href="#ivcamrc">IVCamRenderer</a> COM interface to send video frames directly to VCam driver and do more. Please check the demo applications for details.</p> 
+    
+    <h2>USAGE</h2>
+    <h3>Driver install/uninstall/enable/disable/restart</h3>
+    <p>
+        VCam SDK uses devcon.exe to install/uninstall the driver, it can be easily integrated with your applications.
+        <ul>
+            <li><a name="drv_inst"></a><strong>Install command</strong>: <span class="bluetext">devcon.exe install driver\VCamSDK.inf VCamSDKDevice</span></li>
+            <li><a name="drv_uninst"></a><strong>Uninstall command</strong>: <span class="bluetext">devcon.exe uninstall VCamSDKDevice</span></li>
+            <li><strong>Enable command</strong>: <span class="bluetext">devcon.exe enable VCamSDKDevice</span></li>
+            <li><strong>Disable command</strong>: <span class="bluetext">devcon.exe disable VCamSDKDevice</span></li>
+            <li><strong>Restart command</strong>: <span class="bluetext">devcon.exe restart VCamSDKDevice</span></li>
+        </ul>
+		<strong>NOTE:</strong> You need to run these commands as administrator.<br>
+        Please use <strong>x64\devcon.exe</strong> for 64bits OS.
+    </p>
+    <h3><a name=multivcam></a>Install multiple instances of VCam</h3>
+    <p>
+        Calling <a href="#drv_inst">install command</a> multiple times to install multiple VCam instances, and they will have the same name at first (you can <a href="#drv_rename">change their names</a> later).<br>
+        The SDK will use the first VCam instance by default, and you can call <a href="#setdevname">SetCurrentDevice</a> to choose which one to be used.
+    </p>
+    <p><strong>Uninstall</strong>: calling <a href="#drv_uninst">unistall command</a> once will remove all VCam instances.</p>
+
+    <h3>VCam Renderer filter</h3>
+    <p>
+        You can use it as a normal directshow video renderer, or change VCam settings using its COM interface: <a href="#ivcamrc">IVCamRenderer</a>.<br>
+        Please use <strong>x64\VCamRenderer.ax</strong> if your applications is 64bits, or .NET applications running on 64bits OS.<br>
+		<span class="bluetext">An easy way to make things right is to register 32bits VCamRenderer.ax on 32bits OS, and both 32bits and 64bits VCamRenderer.ax on 64bits OS</span>.
+    </p>
+    
+    <h3><a name="ivcamrc"></a>IVCamRenderer COM interface</h3>
+    <p>
+        For C++ developers, add the following line to your projects:<br>
+        <span class="bluetext">#import "VCamRenderer.tlb" no_namespace, raw_interfaces_only exclude("UINT_PTR") </span><br>
+        and add the "<span class="bluetext">VCamRenderer_i.c</span>" file in VCamDemo project for the CLSIDs.
+    </p>
+    <p>For C# developers, add the wrapper class "<span class="bluetext">VCamRenderer.cs</span>" file in VCamDemoCS project to your projects.</p>
+    <p>For other programming languages, please refer the C++/C# demo projects.</p>
+    <p style="color:#C00"><strong>It's highly recommended to study the demo projects to learn how to use it.</strong></p>
+
+    <h4>FUNCTIONS:</h4>
+    <ul>
+        <li>
+            <span class="function"><a name="setdevname"></a>HRESULT SetCurrentDevice([in] BSTR friendly_name);</span><br>
+            Choose which VCam to be used if there're multiple instances installed.
+        </li>
+        <li>
+            <span class="function">HRESULT SetOutputFormat([in] long width, [in] long height, [in] long fps, [in] long format, [in] long one_size_only);</span><br>
+            Set VCam output video size (even, width*height >= 320x240), and frame rate (negative number means using the source frame rate);<br>
+			format: 1 - RGB24; 2 - YUY2; others - RGB and YUY2;<br>
+			one_size_only: 0 - output 320x240, 640x480 and [width] x [height]; others - [width] x [height] only.
+        </li>
+        <li>
+            <span class="function">HRESULT GetOutputFormat([out] long *width, [out] long *height, [out] long *fps, [out] long* format, [out] long* one_size_only);</span><br>
+            Get VCam output video size (640x480 by default), and frame rate (25 by default).
+        </li>
+        <li>
+            <span class="function">HRESULT SetFillMode([in] long fill_mode);</span><br>
+            Set video resize method (0: Aspect fit, 1: Aspect fill, 2: Stretch), used when input frame size differes from VCam output size.
+        </li>
+        <li>
+            <span class="function">HRESULT GetFillMode([out] long *fill_mode);</span><br>
+            Get current video resize method (see above).
+        </li>
+        <li>
+            <span class="function">HRESULT SetMirror([in] long mirror);</span><br>
+            Mirror the output video (0: no mirror, others: mirror), non-persistent.
+        </li>
+        <li>
+            <span class="function">HRESULT SetFlip([in] long flip);</span><br>
+            Vertical flip the output video (0: no flip, others: flip), non-persistent.
+        </li>
+        <li>
+            <span class="function">HRESULT SetRotateRight([in] long rotate);</span><br>
+            Rotate the input video 90° (0: no rotate, others: rotate), non-persistent.
+        </li>
+        <li>
+            <span class="function">HRESULT SendFrame([in] const unsigned char* i_rgb24_pixels, [in] long i_width, [in] long i_height, [in] long i_stride);</span><br>
+            Send a RGB24 format video frame to driver.<br>
+            Driver will use (i_width*24+31)/32*4 as stride if i_stride was set to 0.<br>
+            Set a negative i_height if the video is vertical flipped.<br>
+            Set i_rgb24_pixels, i_width or i_height to 0 will clear device output and show the idle image.
+        </li>
+        <li>
+            <span class="function">HRESULT SendFrame32([in] const unsigned char* i_rgb32_pixels, [in] long i_width, [in] long i_height, [in] long i_stride);</span><br>
+            Same as SendFrame, but with RGB32 format.<br>
+            Driver will use i_width*4 as stride if i_stride was set to 0.<br>
+            Set a negative i_height if the video is vertical flipped.
+        </li>
+        <li>
+            <span class="function">HRESULT SendFrameYUY2([in] const unsigned char* i_yuy2, [in] long i_width, [in] long i_height, [in] long i_stride);</span><br>
+            Same as SendFrame, but with YUY2 format.<br>
+            Driver will use i_width*2 as stride if i_stride was set to 0.
+        </li>
+        <li>
+            <span class="function">HRESULT SendFrameNV12([in] const unsigned char* i_nv12, [in] long i_width, [in] long i_height, [in] long i_stride);</span><br>
+            Same as SendFrame, but with NV12 format.<br>
+            Driver will use i_width as stride if i_stride was set to 0.
+        </li>
+        <li>
+            <span class="function">HRESULT SendFrameEx([in] VARIANT i_rgb24_array, [in] long i_width, [in] long i_height);</span><br>
+            Send a RGB24 format video buffer to driver, with a VARIANT SAFEARRAY as parameter.
+        </li>
+        <li>
+            <span class="function">HRESULT CaptureScreen([in] long i_x, [in] long i_y, [in] long i_width, [in] long i_height);</span><br>
+            Capture region of screen and set it as VCam output.
+        </li>
+        <li>
+            <span class="function">HRESULT SetConnectionNotificationEvent([in] __int64 i_handle);</span><br>
+            Set an auto-reset event handle to driver, and it will be signaled when other applications open or close VCam device.
+        </li>
+        <li>
+            <span class="function">HRESULT GetConnectedCount([out] long * o_count);</span><br>
+            Get the count of applications using VCam (No matter playing or not).
+        </li>
+        <li>
+            <span class="function">HRESULT IsOpened();</span><br>
+            Check whether the device is being used by other applications, returns S_OK means being used.
+        </li>
+        <li>
+            <span class="function">HRESULT Snapshot([in] BSTR filename);</span><br>
+            Save the <strong>next</strong> video frame (to be sent to driver) to a bitmap file, asynchronously.
+        </li>
+        <li>
+            <span class="function">HRESULT SetIdleFileName([in] BSTR file_name);</span><br>
+            Set a 24bits bitmap file as VCam default idle image, which will be displayed when nothing is being played.<br>
+            Call it with NULL parameter or an empty string will reset it to the default one.<br>
+            The image will be resized (aspect fit) only if it's bigger than VCam output size. 
+        </li>
+        <li>
+            <span class="function"><a name="drv_rename"></a>HRESULT SetFriendlyName([in] BSTR friendly_name);</span><br>
+            The device's name is "<strong>Virtual Camera</strong>" by default, and you can use it to set a different name.<br>
+            The best way to rename is to modify the driver's .INF file, but you'll have to sign the driver with a Kernel-Mode Code Signing Certificates.
+        </li>
+        <li>
+            <span class="function">HRESULT SetLicenseCode([in] BSTR license_code);</span><br>
+            You can set license code here if you've purchased VCam SDK. The water mark (TRIAL) will be removed with a valid license, and call it with a wrong one will show the watermark again.<br>
+            You only need to call it once for one PC.
+        </li>
+    </ul>    
+    
+    <h2>LICENSE AGREEMENT</h2>
+    <p style="font-weight:500;">        
+        We own all the intellectual property rights of the VCam SDK and ensure that it does not contain any viruses or spyware.<br>
+        Products that use the licensed VCam SDK are free to distribute without any restrictions.<br>
+        The license code can only be used in your or your company's products.<br>
+        It is forbidden to spread or resell the license code.<br>
+        You will get the maximum punishment within the bounds of the law if you violate this rule.<br><br>
+    </p>
+    <p>Please contact us if you want to buy it or have any questions.</p>
+    <p>
+        Our website: <a href="https://www.e2esoft.com">www.e2esoft.com</a><br>
+    </p>
+    <p align="center">&copy; e2eSoft, all rights reserved.</p>
+</body>
+</html>
