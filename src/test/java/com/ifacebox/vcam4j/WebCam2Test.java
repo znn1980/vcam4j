@@ -3,13 +3,12 @@ package com.ifacebox.vcam4j;
 import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.videoInputLib.videoInput;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 
 public class WebCam2Test extends JFrame implements Runnable, ActionListener {
     private static final int WEBCAM_WIDTH = 640;
@@ -55,20 +54,24 @@ public class WebCam2Test extends JFrame implements Runnable, ActionListener {
     public void run() {
         vi = new videoInput();
         isOpened = vi.setupDevice(webCamDevice.getId(), WEBCAM_WIDTH, WEBCAM_HEIGHT);
+        webCamBuffer = new BytePointer(vi.getSize(webCamDevice.getId()));
         if (!isOpened) {
             JOptionPane.showMessageDialog(this, "打开摄像头（" + webCamDevice.getName() + "）失败！");
         } else {
             System.err.println("打开摄像头（" + webCamDevice.getName() + "）");
         }
         while (isOpened) {
-            if (!vi.isFrameNew(webCamDevice.getId())) {
+            if (!vi.isFrameNew(webCamDevice.getId()) || !vi.getPixels(webCamDevice.getId(), webCamBuffer)) {
                 continue;
             }
-            webCamBuffer = vi.getPixels(webCamDevice.getId(), true, false);
-            try (InputStream is = new ByteArrayInputStream(webCamBuffer.asBuffer().array())) {
-                webCam.setIcon(new ImageIcon(ImageIO.read(is)));
-            } catch (Exception e) {
-            }
+            BufferedImage bgr = new BufferedImage(WEBCAM_WIDTH, WEBCAM_HEIGHT, BufferedImage.TYPE_3BYTE_BGR);
+            byte[] data = ((DataBufferByte) bgr.getRaster().getDataBuffer()).getData();
+            System.arraycopy(webCamBuffer.getStringBytes(), 0, data, 0, data.length);
+            BufferedImage rgb = new BufferedImage(WEBCAM_WIDTH, WEBCAM_HEIGHT, BufferedImage.TYPE_3BYTE_BGR);
+            Graphics g = rgb.getGraphics();
+            g.drawImage(bgr, 0, 0, WEBCAM_WIDTH, WEBCAM_HEIGHT, 0, WEBCAM_HEIGHT, WEBCAM_WIDTH, 0, null);
+            g.dispose();
+            webCam.setIcon(new ImageIcon(rgb));
         }
         System.err.println("关闭摄像头（" + webCamDevice.getName() + "）");
         vi.stopDevice(webCamDevice.getId());
